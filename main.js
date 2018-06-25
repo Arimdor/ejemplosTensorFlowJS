@@ -2,13 +2,15 @@ let model = null;
 
 // Load saved model from localStore
 loadModel().then((cmodel) => {
-    console.log('Se cargo modelo');
     model = cmodel;
 });
 // End ---
 
 // Async Functions Definitions
 async function train(model) {
+    const txtoutput = document.getElementById('trainlog');
+    txtoutput.innerHTML = "";
+
     const inputs = tf.tensor2d([
         [0, 0],
         [0, 1],
@@ -26,7 +28,9 @@ async function train(model) {
         [3, 1],
         [3, 2],
         [3, 3],
-    ], [16, 2]);
+        [2, 7],
+        [6, 4]
+    ], [18, 2]);
     const results = tf.tensor2d([
         [0],
         [1],
@@ -44,55 +48,55 @@ async function train(model) {
         [4],
         [5],
         [6],
-    ], [16, 1]);
+        [9],
+        [10]
+    ], [18, 1]);
 
-    for (let i = 0; i < 500; i++) {
-        const response = await model.fit(inputs, results, {shuffle: true, epochs: 8});
-        console.log(response.history.loss[0]);
+    for (let i = 0; i < 10; i++) {
+        const response = await model.fit(inputs, results, {shuffle: true, epochs: 250});
+        txtoutput.innerHTML += response.history.loss[0] + '<br>';
+        console.log(response.history.loss[0])
     }
-    await model.save('localstorage://my-model-1');
+    await model.save('localstorage://modelo');
 }
 
 async function loadModel() {
     let cmodel = null;
-    try {
-        cmodel = await tf.loadModel('localstorage://my-model-1');
-        cmodel.compile({
-            optimizer: tf.train.sgd(0.001),
-            loss: 'meanSquaredError'
-        });
-    } catch (e) {
+
+    if (localStorage.getItem("tensorflowjs_models/modelo/info") != null) {
+        cmodel = await tf.loadModel('localstorage://modelo');
+        console.log('Se cargo modelo');
+    }
+
+    if (cmodel == null) {
         cmodel = tf.sequential();
         const hidden = tf.layers.dense({
-            units: 3,
+            units: 6,
             inputShape: [2],
             activation: 'relu'
         });
         const output = tf.layers.dense({
             units: 1,
         });
-
         cmodel.add(hidden);
         cmodel.add(output);
-        cmodel.compile({
-            optimizer: tf.train.sgd(0.001),
-            loss: 'meanSquaredError'
-        });
-    } finally {
-
-        return cmodel;
+        console.log('Creando modelo');
     }
-
+    cmodel.compile({
+        optimizer: tf.train.sgd(0.001),
+        loss: 'meanSquaredError'
+    });
+    return cmodel;
 
 }
 
 // End ---
 
 // Functions for buttons
-function btnTrain() {
-    train(model).then(() => {
-        console.log('Training Complete');
-    });
+async function btnTrain() {
+    await train(model);
+    console.log('Training Complete');
+
 }
 
 function btnCalculate(a, b) {
