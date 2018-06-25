@@ -54,9 +54,15 @@ async function train(model) {
 }
 
 async function loadModel() {
-    let cmodel = await tf.loadModel('localstorage://my-model-1');
-    if (cmodel === null) {
-        model = tf.sequential();
+    let cmodel = null;
+    try {
+        cmodel = await tf.loadModel('localstorage://my-model-1');
+        cmodel.compile({
+            optimizer: tf.train.sgd(0.001),
+            loss: 'meanSquaredError'
+        });
+    } catch (e) {
+        cmodel = tf.sequential();
         const hidden = tf.layers.dense({
             units: 3,
             inputShape: [2],
@@ -66,14 +72,18 @@ async function loadModel() {
             units: 1,
         });
 
-        model.add(hidden);
-        model.add(output);
+        cmodel.add(hidden);
+        cmodel.add(output);
+        cmodel.compile({
+            optimizer: tf.train.sgd(0.001),
+            loss: 'meanSquaredError'
+        });
+    } finally {
+
+        return cmodel;
     }
-    cmodel.compile({
-        optimizer: tf.train.sgd(0.001),
-        loss: 'meanSquaredError'
-    });
-    return cmodel;
+
+
 }
 
 // End ---
