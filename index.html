@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ejemplo utilizando TensorFlowJS</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tensorflow/0.11.7/tf.min.js"></script>
+</head>
+<body>
+<script src="main.js"></script>
+
+<div style="margin: 0 auto; width: fit-content;">
+    <button type="button" onclick="btnTrain();">Entrenar Red Neuronal</button>
+</div>
+
+<form style="margin: 0 auto; padding-top: 50px; width: fit-content" action="">
+    <input id="a" type="number" placeholder="Número 1" min="0" max="5" maxlength="1" style="min-width: 150px;">
+    <input id="b" type="number" placeholder="Número 2" min="0" max="5" maxlength="1" style="min-width: 150px;">
+    <button type="button" onclick="btnCalculate(document.getElementById('a').value,document.getElementById('b').value)">
+        Calcular Suma
+    </button>
+</form>
+</body>
+</html>
