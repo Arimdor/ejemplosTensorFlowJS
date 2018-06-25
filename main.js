@@ -87,6 +87,7 @@ function btnTrain() {
 
 function btnCalculate(a, b) {
     let outputs = model.predict(tf.tensor2d([a, b], [1, 2]));
+    document.getElementById('result').innerHTML = outputs.toString();
     outputs.print();
 }
 
